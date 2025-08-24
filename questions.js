@@ -1,14 +1,5 @@
 // Danh sách đầy đủ 216 câu hỏi Luật Đấu thầu 2023
 const allQuestions = [
-    // Remove prefix 'Câu xx. ' from question text
-    // This code will run once when the file is loaded
-    if (typeof window !== 'undefined') {
-        allQuestions.forEach(q => {
-            if (typeof q.question === 'string') {
-                q.question = q.question.replace(/^Câu \d+\.\s*/, '');
-            }
-        });
-    }
     {
         question: "Theo Luật Đấu thầu 2023, Đối tượng áp dụng của Luật này bao gồm những ai?",
         answers: ["Chỉ áp dụng cho cơ quan nhà nước", "Áp dụng cho cơ quan nhà nước, tổ chức, cá nhân liên quan đến hoạt động đấu thầu", "Chỉ áp dụng cho doanh nghiệp nhà nước", "Áp dụng cho doanh nghiệp nhà nước và doanh nghiệp tư nhân"],
