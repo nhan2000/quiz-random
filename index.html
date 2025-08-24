@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Random - Kiểm tra kiến thức</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .quiz-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+            animation: slideIn 0.8s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .quiz-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .quiz-title {
+            color: #4a5568;
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .quiz-subtitle {
+            color: #718096;
+            font-size: 1.1rem;
+        }
+
+        .question-counter {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .question {
+            background: #f7fafc;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-left: 5px solid #667eea;
+        }
+
+        .question-text {
+            font-size: 1.3rem;
+            color: #2d3748;
+            font-weight: 600;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .answers {
+            display: grid;
+            gap: 12px;
+        }
+
+        .answer {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .answer:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+        }
+
+        .answer.correct {
+            background: linear-gradient(45deg, #48bb78, #38a169);
+            color: white;
+            border-color: #38a169;
+            animation: correctPulse 0.6s ease;
+        }
+
+        .answer.incorrect {
+            background: linear-gradient(45deg, #f56565, #e53e3e);
+            color: white;
+            border-color: #e53e3e;
+            animation: incorrectShake 0.6s ease;
+        }
+
+        .answer.disabled {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        @keyframes correctPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes incorrectShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .next-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            display: none;
+        }
+
+        .next-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .score {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.2rem;
+            color: #4a5568;
+            font-weight: bold;
+        }
+
+        .restart-btn {
+            background: linear-gradient(45deg, #38a169, #48bb78);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .restart-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(56, 161, 105, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .quiz-container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            .quiz-title {
+                font-size: 2rem;
+            }
+            
+            .question-text {
+                font-size: 1.1rem;
+            }
+            
+            .answer {
+                padding: 12px 15px;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <div class="quiz-header">
+            <h1 class="quiz-title">🧠 Quiz Random</h1>
+            <p class="quiz-subtitle">Kiểm tra kiến thức của bạn</p>
+        </div>
+
+        <div id="quiz-content">
+            <div class="question-counter">
+                Câu <span id="current-question">1</span> / <span id="total-questions">5</span>
+            </div>
+            
+            <div class="question">
+                <div class="question-text" id="question-text"></div>
+                <div class="answers" id="answers-container"></div>
+            </div>
+            
+            <button class="next-btn" id="next-btn" onclick="nextQuestion()">Câu tiếp theo</button>
+            
+            <div class="score" id="score-display" style="display: none;">
+                <div>🎉 Hoàn thành!</div>
+                <div>Điểm số: <span id="final-score"></span></div>
+                <button class="restart-btn" onclick="restartQuiz()">Chơi lại</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Danh sách câu hỏi
+        const questions = [
+            {
+                question: "Thủ đô của Việt Nam là gì?",
+                answers: ["Hồ Chí Minh", "Hà Nội", "Đà Nẵng", "Hải Phòng"],
+                correct: 1
+            },
+            {
+                question: "Ngôn ngữ lập trình nào được sử dụng để tạo trang web?",
+                answers: ["Python", "JavaScript", "C++", "Java"],
+                correct: 1
+            },
+            {
+                question: "Ai là người phát minh ra bóng đèn điện?",
+                answers: ["Nikola Tesla", "Thomas Edison", "Albert Einstein", "Alexander Bell"],
+                correct: 1
+            },
+            {
+                question: "Hành tinh nào gần Mặt Trời nhất?",
+                answers: ["Venus", "Mars", "Mercury", "Earth"],
+                correct: 2
+            },
+            {
+                question: "HTML là viết tắt của gì?",
+                answers: ["Hyper Text Markup Language", "High Tech Modern Language", "Home Tool Markup Language", "Hyperlink and Text Markup Language"],
+                correct: 0
+            },
+            {
+                question: "Ai viết tác phẩm 'Truyện Kiều'?",
+                answers: ["Nguyễn Du", "Hồ Xuân Hương", "Cao Bá Quát", "Nguyễn Đình Chiểu"],
+                correct: 0
+            },
+            {
+                question: "Đại dương lớn nhất thế giới là gì?",
+                answers: ["Đại Tây Dương", "Ấn Độ Dương", "Thái Bình Dương", "Bắc Băng Dương"],
+                correct: 2
+            },
+            {
+                question: "Số nguyên tố nhỏ nhất là?",
+                answers: ["0", "1", "2", "3"],
+                correct: 2
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let shuffledQuestions = [];
+        let answered = false;
+
+        // Shuffle mảng câu hỏi
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        // Khởi tạo quiz
+        function initQuiz() {
+            shuffledQuestions = shuffleArray(questions).slice(0, 5); // Lấy 5 câu random
+            currentQuestionIndex = 0;
+            score = 0;
+            answered = false;
+            document.getElementById('total-questions').textContent = shuffledQuestions.length;
+            showQuestion();
+        }
+
+        // Hiển thị câu hỏi
+        function showQuestion() {
+            const question = shuffledQuestions[currentQuestionIndex];
+            document.getElementById('current-question').textContent = currentQuestionIndex + 1;
+            document.getElementById('question-text').textContent = question.question;
+            
+            const answersContainer = document.getElementById('answers-container');
+            answersContainer.innerHTML = '';
+            
+            question.answers.forEach((answer, index) => {
+                const answerElement = document.createElement('div');
+                answerElement.className = 'answer';
+                answerElement.textContent = answer;
+                answerElement.onclick = () => selectAnswer(index);
+                answersContainer.appendChild(answerElement);
+            });
+            
+            document.getElementById('next-btn').style.display = 'none';
+            answered = false;
+        }
+
+        // Xử lý khi chọn đáp án
+        function selectAnswer(selectedIndex) {
+            if (answered) return;
+            answered = true;
+            
+            const question = shuffledQuestions[currentQuestionIndex];
+            const answers = document.querySelectorAll('.answer');
+            
+            answers.forEach((answer, index) => {
+                answer.classList.add('disabled');
+                if (index === question.correct) {
+                    answer.classList.add('correct');
+                } else if (index === selectedIndex) {
+                    answer.classList.add('incorrect');
+                }
+            });
+            
+            if (selectedIndex === question.correct) {
+                score++;
+            }
+            
+            document.getElementById('next-btn').style.display = 'inline-block';
+        }
+
+        // Câu hỏi tiếp theo
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < shuffledQuestions.length) {
+                showQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        // Hiển thị kết quả
+        function showResult() {
+            document.getElementById('quiz-content').style.display = 'none';
+            document.getElementById('score-display').style.display = 'block';
+            document.getElementById('final-score').textContent = `${score}/${shuffledQuestions.length}`;
+        }
+
+        // Chơi lại
+        function restartQuiz() {
+            document.getElementById('quiz-content').style.display = 'block';
+            document.getElementById('score-display').style.display = 'none';
+            initQuiz();
+        }
+
+        // Khởi chạy khi trang load
+        window.onload = initQuiz;
+    </script>
+</body>
+</html>
