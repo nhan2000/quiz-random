@@ -218,239 +218,68 @@
         </div>
 
         <div id="quiz-content">
-            <div class="question-counter">
-                Câu <span id="current-question">1</span> / <span id="total-questions">10</span>
+            <div class="settings-panel" id="settings-panel">
+                <h3 style="margin-bottom: 20px; color: #4a5568;">⚙️ Cài đặt Quiz</h3>
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #2d3748;">
+                        Số câu hỏi muốn làm:
+                    </label>
+                    <select id="question-count" style="width: 100%; padding: 10px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1rem;">
+                        <option value="5">5 câu</option>
+                        <option value="10" selected>10 câu</option>
+                        <option value="15">15 câu</option>
+                        <option value="20">20 câu</option>
+                        <option value="30">30 câu</option>
+                        <option value="50">50 câu</option>
+                        <option value="55">55 câu</option>
+                        <option value="100">100 câu</option>
+                        <option value="150">150 câu</option>
+                        <option value="216">Tất cả 216 câu</option>
+                    </select>
+                </div>
+                <button onclick="startQuiz()" style="background: linear-gradient(45deg, #667eea, #764ba2); color: white; border: none; padding: 15px 30px; border-radius: 25px; font-size: 1.1rem; font-weight: bold; cursor: pointer; width: 100%; transition: all 0.3s ease;">
+                    🚀 Bắt đầu Quiz
+                </button>
+                <div style="margin-top: 20px; padding: 15px; background: #f0f4f8; border-radius: 10px; font-size: 0.9rem; color: #4a5568;">
+                    📊 <strong>Hiện tại có 216 câu hỏi</strong> về Luật Đấu thầu 2023.<br>
+                    ✅ <strong>Đã cập nhật đủ 216 câu hỏi.</strong><br>
+                </div>
             </div>
-            
-            <div class="question">
-                <div class="question-text" id="question-text"></div>
-                <div class="answers" id="answers-container"></div>
+
+            <div class="quiz-game" id="quiz-game" style="display: none;">
+                <div class="question-counter">
+                    Câu <span id="current-question">1</span> / <span id="total-questions">10</span>
+                </div>
+                
+                <div class="question">
+                    <div class="question-text" id="question-text"></div>
+                    <div class="answers" id="answers-container"></div>
+                </div>
+                
+                <button class="next-btn" id="next-btn" onclick="nextQuestion()">Câu tiếp theo</button>
             </div>
-            
-            <button class="next-btn" id="next-btn" onclick="nextQuestion()">Câu tiếp theo</button>
             
             <div class="score" id="score-display" style="display: none;">
                 <div>🎉 Hoàn thành!</div>
                 <div>Điểm số: <span id="final-score"></span></div>
-                <button class="restart-btn" onclick="restartQuiz()">Chơi lại</button>
+                <div style="margin-top: 15px;">
+                    <button class="restart-btn" onclick="restartQuiz()">Chơi lại</button>
+                    <button class="restart-btn" onclick="backToSettings()" style="background: linear-gradient(45deg, #667eea, #764ba2); margin-left: 10px;">Chọn lại số câu</button>
+                </div>
             </div>
         </div>
     </div>
 
+    <script src="questions.js"></script>
     <script>
-        // Danh sách câu hỏi Luật Đấu thầu 2023
-        const questions = [
-            {
-                question: "Theo Luật Đấu thầu 2023, Đối tượng áp dụng của Luật này bao gồm những ai?",
-                answers: ["Chỉ áp dụng cho cơ quan nhà nước", "Áp dụng cho cơ quan nhà nước, tổ chức, cá nhân liên quan đến hoạt động đấu thầu", "Chỉ áp dụng cho doanh nghiệp nhà nước", "Áp dụng cho doanh nghiệp nhà nước và doanh nghiệp tư nhân"],
-                correct: 1
-            },
-            {
-                question: "Theo Luật Đấu thầu 2023, Cơ quan, tổ chức, doanh nghiệp được tự quyết định việc lựa chọn nhà thầu trên cơ sở bảo đảm công khai, minh bạch, hiệu quả kinh tế và trách nhiệm giải trình trong trường hợp nào?",
-                answers: ["Việc thuê, mua, thuê mua nhà, trụ sở, tài sản gắn liền với đất", "Việc xác định hòa giải viên, thành viên trong ban phân xử tranh chấp, hội đồng trọng tài để xử lý tranh chấp phát sinh trong quá trình thực hiện hợp đồng", "Lựa chọn nhà thầu cung cấp dịch vụ dầu khí, hàng hóa phục vụ hoạt động dầu khí phù hợp với hợp đồng dầu khí", "Tất cả các đáp án trên"],
-                correct: 3
-            },
-            {
-                question: "Theo Luật Đấu thầu 2023, Chủ đầu tư có thể là cơ quan hoặc tổ chức nào sau đây?",
-                answers: ["Tổ chức sử dụng ngân sách", "Đơn vị mua sắm tập trung", "Cơ quan có thẩm quyền chấp thuận chủ trương đầu tư", "Tất cả đều đúng"],
-                correct: 3
-            },
-            {
-                question: "Theo Luật Đấu thầu 2023, Trong đấu thầu rộng rãi, danh sách ngắn liên quan đến đối tượng nào?",
-                answers: ["Nhà thầu trúng sơ tuyển", "Nhà thầu được mời tham dự thầu", "Nhà thầu có hồ sơ quan tâm đáp ứng yêu cầu", "Tất cả các đối tượng trên"],
-                correct: 3
-            },
-            {
-                question: "Theo Luật Đấu thầu 2023, Dịch vụ tư vấn bao gồm những hoạt động nào?",
-                answers: ["Logistics và quảng cáo", "Lập báo cáo quy hoạch và tư vấn đấu thầu", "Sửa chữa và bảo dưỡng", "In ấn và vệ sinh"],
-                correct: 1
-            },
-            {
-                question: "Theo Luật Đấu thầu 2023, Dịch vụ nào thuộc vào danh mục 'Dịch vụ phi tư vấn'?",
-                answers: ["Lập báo cáo nghiên cứu tiền khả thi", "Logistics và bảo hiểm", "Tư vấn quản lý dự án", "Khảo sát và lập thiết kế"],
-                correct: 1
-            },
-            {
-                question: "Theo Luật Đấu thầu 2023, Đấu thầu là quá trình gì?",
-                answers: ["Lựa chọn nhà thầu để ký kết và thực hiện hợp đồng cung cấp dịch vụ tư vấn, dịch vụ phi tư vấn, mua sắm hàng hóa, xây lắp", "Sửa chữa và bảo trì dự án", "Lập báo cáo nghiên cứu tiền khả thi", "Chụp ảnh vệ tinh cho dự án"],
-                correct: 0
-            },
-            {
-                question: "Theo Luật Đấu thầu 2023, Đấu thầu qua mạng là gì?",
-                answers: ["Việc thực hiện hoạt động đấu thầu chỉ trong mạng internet", "Việc thực hiện hoạt động đấu thầu trên Hệ thống mạng đấu thầu quốc gia", "Hoạt động đấu thầu trên các trang web mạng xã hội", "Quá trình lựa chọn nhà thầu qua mạng đấu thầu quốc gia"],
-                correct: 1
-            },
-            {
-                question: "Theo Luật Đấu thầu 2023, Đấu thầu quốc tế liên quan đến những đối tượng nào?",
-                answers: ["Chỉ nhà thầu trong nước", "Chỉ nhà đầu tư nước ngoài", "Cả nhà thầu và nhà đầu tư trong nước, nước ngoài", "Chỉ nhà thầu nước ngoài"],
-                correct: 2
-            },
-            {
-                question: "Theo Luật Đấu thầu 2023, Đấu thầu trong nước là gì?",
-                answers: ["Chỉ nhà thầu, nhà đầu tư trong nước được tham dự thầu", "Chỉ nhà đầu tư nước ngoài được tham dự thầu", "Cả nhà thầu và nhà đầu tư trong nước, nước ngoài được tham dự thầu", "Chỉ nhà thầu nước ngoài được tham dự thầu"],
-                correct: 0
-            },
-            {
-                question: "Theo Luật Đấu thầu 2023, Hàng hóa bao gồm những thành phần nào?",
-                answers: ["Máy móc, nguyên liệu, sản phẩm", "Nguyên liệu, vật liệu, vật tư", "Phương tiện, sản phẩm, vật liệu xét nghiệm", "Tất cả đều đúng"],
-                correct: 3
-            },
-            {
-                question: "Theo Luật Đấu thầu 2023, Giá dự thầu là gì?",
-                answers: ["Giá trị ghi trong hợp đồng giữa chủ đầu tư và nhà thầu", "Giá do nhà thầu chào trong đơn dự thầu, bao gồm toàn bộ các chi phí để thực hiện gói thầu theo yêu cầu của hồ sơ mời thầu, hồ sơ yêu cầu", "Giá dự thầu của nhà thầu được đề nghị trúng thầu sau khi đã được sửa lỗi, hiệu chỉnh sai lệch theo yêu cầu của hồ sơ mời thầu, hồ sơ yêu cầu, trừ đi giá trị giảm giá (nếu có)", "Giá hợp đồng đã ký kết"],
-                correct: 1
-            },
-            {
-                question: "Theo Luật Đấu thầu 2023, Giá đề nghị trúng thầu là gì?",
-                answers: ["Giá trị ghi trong hợp đồng giữa chủ đầu tư và nhà thầu", "Giá do nhà thầu chào trong đơn dự thầu, bao gồm toàn bộ các chi phí để thực hiện gói thầu theo yêu cầu của hồ sơ mời thầu, hồ sơ yêu cầu", "Giá dự thầu của nhà thầu được đề nghị trúng thầu sau khi đã được sửa lỗi, hiệu chỉnh sai lệch theo yêu cầu của hồ sơ mời thầu, hồ sơ yêu cầu, trừ đi giá trị giảm giá (nếu có)", "Giá hợp đồng đã ký kết"],
-                correct: 2
-            },
-            {
-                question: "Theo Luật Đấu thầu 2023, Giá hợp đồng là gì?",
-                answers: ["Giá trị ghi trong hợp đồng giữa chủ đầu tư và nhà thầu", "Giá do nhà thầu chào trong đơn dự thầu, bao gồm toàn bộ các chi phí để thực hiện gói thầu theo yêu cầu của hồ sơ mời thầu, hồ sơ yêu cầu", "Giá dự thầu của nhà thầu được đề nghị trúng thầu sau khi đã được sửa lỗi, hiệu chỉnh sai lệch theo yêu cầu của hồ sơ mời thầu, hồ sơ yêu cầu, trừ đi giá trị giảm giá (nếu có)", "Giá hợp đồng đã ký kết"],
-                correct: 0
-            },
-            {
-                question: "Theo Luật Đấu thầu 2023, Hệ thống mạng đấu thầu quốc gia có mục đích gì?",
-                answers: ["Tăng cường quản lý thông tin về đấu thầu và thực hiện đấu thầu qua mạng", "Giảm bớt sự phức tạp trong quản lý đấu thầu", "Hỗ trợ nhà thầu xây dựng website cá nhân để đấu thầu", "Tạo ra một hệ thống đấu thầu mới"],
-                correct: 0
-            },
-            {
-                question: "Theo Luật Đấu thầu 2023, Nhà thầu cung cấp dịch vụ phi tư vấn, mua sắm hàng hóa, xây lắp, hỗn hợp được xem xét, đề nghị trúng thầu khi có giá trị phần sai lệch thiếu không quá bao nhiêu % giá dự thầu?",
-                answers: ["15%", "10%", "20%", "25%"],
-                correct: 0
-            },
-            {
-                question: "Theo Luật Đấu thầu 2023, Có bao nhiêu loại hợp đồng với nhà thầu?",
-                answers: ["6 loại", "7 loại", "8 loại", "4 loại"],
-                correct: 1
-            },
-            {
-                question: "Theo Luật Đấu thầu 2023, Mức bảo đảm dự thầu cho gói thầu xây lắp, hỗn hợp có giá không quá 20 tỷ đồng được quy định như thế nào?",
-                answers: ["Từ 0,5% đến 1,5%", "Từ 1% đến 1,5%", "Từ 1,5% đến 3%", "Từ 1% đến 3%"],
-                correct: 3
-            },
-            {
-                question: "Theo Luật Đấu thầu 2023, Thời gian có hiệu lực của bảo đảm dự thầu được quy định trong hồ sơ mời thầu bằng thời gian có hiệu lực của hồ sơ dự thầu cộng thêm bao nhiêu ngày?",
-                answers: ["15 ngày", "30 ngày", "45 ngày", "60 ngày"],
-                correct: 1
-            },
-            {
-                question: "Theo Luật Đấu thầu 2023, Ngôn ngữ sử dụng trong đấu thầu trong nước là gì?",
-                answers: ["Tiếng Anh", "Tiếng Pháp", "Tiếng Việt", "Tiếng Tây Ban Nha"],
-                correct: 2
-            },
-            {
-                question: "Theo Luật Đấu thầu 2023, Đối với đấu thầu trong nước, nhà thầu và nhà đầu tư chỉ được chào thầu bằng loại đồng tiền nào?",
-                answers: ["Đô-la Mỹ", "Euro", "Đồng Việt Nam", "Yên Nhật"],
-                correct: 2
-            },
-            {
-                question: "Theo Luật Đấu thầu 2023, Trong đấu thầu quốc tế, hồ sơ mời thầu có thể quy định tối đa bao nhiêu loại đồng tiền dự thầu?",
-                answers: ["1", "2", "3", "4"],
-                correct: 2
-            },
-            {
-                question: "Theo Luật Đấu thầu 2023, Khi hồ sơ mời thầu quy định nhà thầu, nhà đầu tư có thể chào thầu bằng 2 hoặc 3 loại đồng tiền, thì khi đánh giá hồ sơ dự thầu, phải quy đổi về bao nhiêu loại đồng tiền?",
-                answers: ["1", "2", "3", "4"],
-                correct: 0
-            },
-            {
-                question: "Theo Luật Đấu thầu 2023, Các biện pháp nào sau đây có thể được nhà thầu, nhà đầu tư thực hiện để bảo đảm trách nhiệm dự thầu?",
-                answers: ["Đặt cọc", "Nộp thư bảo lãnh của tổ chức tín dụng", "Nộp giấy chứng nhận bảo hiểm bảo lãnh", "Tất cả các phương án trên"],
-                correct: 3
-            },
-            {
-                question: "Theo Luật Đấu thầu 2023, Ai chịu chi phí liên quan đến việc chuẩn bị hồ sơ quan tâm, hồ sơ dự sơ tuyển, hồ sơ dự thầu trong đấu thầu trong nước?",
-                answers: ["Nhà thầu", "Chủ đầu tư", "Bên mời thầu", "Nhà đầu tư"],
-                correct: 0
-            },
-            {
-                question: "Theo Luật Đấu thầu 2023, Ai có thẩm quyền quy định về hình thức, quy trình, đối tượng phù hợp với Hệ thống mạng đấu thầu quốc gia?",
-                answers: ["Bộ Xây dựng", "Chính phủ", "Bộ Kế hoạch và Đầu tư", "Ủy ban Nhân dân tỉnh"],
-                correct: 2
-            },
-            {
-                question: "Theo Luật Đấu thầu 2023, Điều gì đặc trưng cho đấu thầu rộng rãi?",
-                answers: ["Hạn chế số lượng nhà thầu tham dự", "Áp dụng cho tất cả các gói thầu", "Không giới hạn số lượng nhà thầu tham dự", "Chỉ áp dụng cho các gói thầu có yêu cầu đặc thù"],
-                correct: 2
-            },
-            {
-                question: "Theo Luật Đấu thầu 2023, Phương thức một giai đoạn một túi hồ sơ được áp dụng trong trường hợp nào?",
-                answers: ["Mua sắm trực tiếp đối với gói thầu mua sắm hàng hóa", "Chào hàng cạnh tranh đối với gói thầu cung cấp dịch vụ phi tư vấn, mua sắm hàng hóa, xây lắp, gói thầu hỗn hợp cung cấp hàng hóa và xây lắp", "Chỉ định thầu đối với gói thầu cung cấp dịch vụ tư vấn, dịch vụ phi tư vấn, mua sắm hàng hóa, xây lắp, hỗn hợp", "Tất cả các đáp án trên"],
-                correct: 3
-            },
-            {
-                question: "Theo Luật Đấu thầu 2023, Việc mở thầu được tiến hành mấy lần trong phương thức một giai đoạn một túi hồ sơ?",
-                answers: ["Hai lần", "Một lần", "Ba lần", "Tùy thuộc vào quyết định của chủ đầu tư"],
-                correct: 1
-            },
-            {
-                question: "Theo Luật Đấu thầu 2023, Việc mở thầu trong phương thức một giai đoạn hai túi hồ sơ được tiến hành bao nhiêu lần?",
-                answers: ["Hai lần", "Một lần", "Ba lần", "Tùy thuộc vào quyết định của chủ đầu tư"],
-                correct: 0
-            },
-            {
-                question: "Theo Luật Đấu thầu 2023, Khi nào kế hoạch tổng thể lựa chọn nhà thầu có thể được lập?",
-                answers: ["Sau khi dự án được chủ đầu tư phê duyệt", "Đồng thời hoặc độc lập với báo cáo nghiên cứu khả thi", "Trước khi báo cáo nghiên cứu khả thi được phê duyệt", "Khi dự án đã hoàn thành"],
-                correct: 1
-            },
-            {
-                question: "Theo Luật Đấu thầu 2023, Trường hợp gói thầu có thời gian thực hiện dài hơn 01 năm thì yêu cầu gì?",
-                answers: ["Kế hoạch lựa chọn nhà thầu phải nêu rõ thời gian thực hiện gói thầu và giá gói thầu trên cơ sở toàn bộ thời gian thực hiện gói thầu", "Kế hoạch lựa chọn nhà thầu phải nêu rõ thời gian thực hiện gói thầu", "Chỉ cần nêu giá gói thầu", "Không có yêu cầu đặc biệt"],
-                correct: 0
-            },
-            {
-                question: "Theo Luật Đấu thầu 2023, Thời gian thực hiện gói thầu được tính từ khi nào đến khi nào?",
-                answers: ["Từ ngày phát hành hồ sơ mời thầu đến ngày ký hợp đồng", "Từ ngày hợp đồng có hiệu lực đến ngày nghiệm thu hoàn thành công trình", "Từ ngày mở thầu đến ngày ký hợp đồng", "Từ ngày hợp đồng có hiệu lực đến ngày mở thầu"],
-                correct: 1
-            },
-            {
-                question: "Theo Luật Đấu thầu 2023, Đối với đấu thầu trong nước, thời gian chuẩn bị hồ sơ dự thầu tối thiểu là bao lâu?",
-                answers: ["45 ngày", "15 ngày", "60 ngày", "30 ngày"],
-                correct: 3
-            },
-            {
-                question: "Theo Luật Đấu thầu 2023, Đối với đấu thầu quốc tế, thời gian chuẩn bị hồ sơ dự thầu tối thiểu là bao lâu?",
-                answers: ["45 ngày", "15 ngày", "60 ngày", "30 ngày"],
-                correct: 0
-            },
-            {
-                question: "Theo Luật Đấu thầu 2023, Ai thống nhất quản lý nhà nước đối với hoạt động đấu thầu trên phạm vi cả nước?",
-                answers: ["Chính phủ", "Bộ Kế hoạch và Đầu tư", "Bộ, cơ quan ngang Bộ và Ủy ban nhân dân các cấp", "Nhà đầu tư"],
-                correct: 1
-            },
-            {
-                question: "Theo Luật Đấu thầu 2023, Quyền khởi kiện ra Tòa án trong hoạt động đấu thầu được thực hiện theo quy định của pháp luật nào?",
-                answers: ["Pháp luật về đấu thầu", "Pháp luật về tố tụng hình sự", "Pháp luật về tố tụng hành chính", "Pháp luật về tố tụng dân sự"],
-                correct: 2
-            },
-            {
-                question: "Luật Đấu thầu 2023 có hiệu lực thi hành từ ngày nào?",
-                answers: ["ngày 01 tháng 01 năm 2024", "ngày 15 tháng 01 năm 2024", "ngày 31 tháng 01 năm 2024", "ngày 10 tháng 01 năm 2024"],
-                correct: 0
-            },
-            {
-                question: "Theo Luật Đấu thầu sửa đổi, bổ sung năm 2024, Nhà thầu tham dự thầu và nhà thầu tư vấn cho gói thầu không được cùng có cổ phần hoặc phần vốn góp trên bao nhiêu % của một tổ chức, cá nhân khác?",
-                answers: ["20%", "10%", "25%", "30%"],
-                correct: 2
-            },
-            {
-                question: "Theo Luật Đấu thầu sửa đổi, bổ sung năm 2024, 'Đấu thầu trước' là gì?",
-                answers: ["Đấu thầu được tổ chức trước khi chủ đầu tư có vốn đối ứng", "Thực hiện trước một số thủ tục đấu thầu trước khi dự án được phê duyệt đầu tư hoặc trước khi ký kết điều ước quốc tế, thỏa thuận vay với nước ngoài", "Đấu thầu khẩn cấp trong trường hợp thiên tai, dịch bệnh", "Đấu thầu thử nghiệm để chọn nhà thầu tiềm năng"],
-                correct: 1
-            },
-            {
-                question: "Theo Luật Đấu thầu sửa đổi, bổ sung 2025, Các hình thức lựa chọn nhà thầu theo quy định bao gồm những gì?",
-                answers: ["Đấu thầu rộng rãi, chỉ định thầu, mua sắm tập trung, thuê ngoài", "Đấu thầu hạn chế, chào hàng cạnh tranh, chỉ định thầu, đặt hàng, mua sắm trực tiếp, tự thực hiện, tham gia của cộng đồng, đàm phán giá", "Đấu thầu rộng rãi, mua sắm trực tiếp, đấu giá tài sản, đặt hàng", "Chỉ định thầu, đấu thầu cạnh tranh, thương thảo hợp đồng"],
-                correct: 1
-            }
-        ];
+        // Sử dụng câu hỏi từ file questions.js
+        const questions = allQuestions;
 
         let currentQuestionIndex = 0;
         let score = 0;
         let shuffledQuestions = [];
         let answered = false;
+        let selectedQuestionCount = 10;
 
         // Shuffle mảng câu hỏi
         function shuffleArray(array) {
@@ -462,9 +291,26 @@
             return shuffled;
         }
 
+        // Bắt đầu quiz
+        function startQuiz() {
+            selectedQuestionCount = parseInt(document.getElementById('question-count').value);
+            
+            document.getElementById('settings-panel').style.display = 'none';
+            document.getElementById('quiz-game').style.display = 'block';
+            
+            initQuiz();
+        }
+
+        // Quay lại settings
+        function backToSettings() {
+            document.getElementById('settings-panel').style.display = 'block';
+            document.getElementById('quiz-game').style.display = 'none';
+            document.getElementById('score-display').style.display = 'none';
+        }
+
         // Khởi tạo quiz
         function initQuiz() {
-            shuffledQuestions = shuffleArray(questions).slice(0, 10); // Lấy 10 câu random
+            shuffledQuestions = shuffleArray(questions).slice(0, selectedQuestionCount);
             currentQuestionIndex = 0;
             score = 0;
             answered = false;
@@ -529,20 +375,33 @@
 
         // Hiển thị kết quả
         function showResult() {
-            document.getElementById('quiz-content').style.display = 'none';
+            document.getElementById('quiz-game').style.display = 'none';
             document.getElementById('score-display').style.display = 'block';
-            document.getElementById('final-score').textContent = `${score}/${shuffledQuestions.length}`;
+            
+            const percentage = Math.round((score / shuffledQuestions.length) * 100);
+            let emoji = '';
+            if (percentage >= 90) emoji = '🏆';
+            else if (percentage >= 80) emoji = '🥇';
+            else if (percentage >= 70) emoji = '🥈';
+            else if (percentage >= 60) emoji = '🥉';
+            else emoji = '📚';
+            
+            document.getElementById('final-score').innerHTML = `${score}/${shuffledQuestions.length} (${percentage}%) ${emoji}`;
         }
 
         // Chơi lại
         function restartQuiz() {
-            document.getElementById('quiz-content').style.display = 'block';
+            document.getElementById('quiz-game').style.display = 'block';
             document.getElementById('score-display').style.display = 'none';
             initQuiz();
         }
 
-        // Khởi chạy khi trang load
-        window.onload = initQuiz;
+        // Khởi chạy khi trang load - hiển thị settings
+        window.onload = function() {
+            document.getElementById('settings-panel').style.display = 'block';
+            document.getElementById('quiz-game').style.display = 'none';
+            document.getElementById('score-display').style.display = 'none';
+        };
     </script>
 </body>
 </html>
