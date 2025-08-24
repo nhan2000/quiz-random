@@ -275,6 +275,15 @@
         // Sử dụng câu hỏi từ file questions.js
         const questions = allQuestions;
 
+            // Làm sạch tiền tố 'Câu xx. ' khỏi tất cả câu hỏi
+            if (typeof window !== 'undefined' && Array.isArray(allQuestions)) {
+                allQuestions.forEach(q => {
+                    if (typeof q.question === 'string') {
+                        q.question = q.question.replace(/^Câu \d+\.\s*/, '');
+                    }
+                });
+            }
+
         let currentQuestionIndex = 0;
         let score = 0;
         let shuffledQuestions = [];
